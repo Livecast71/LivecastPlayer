@@ -18,9 +18,12 @@ extension LivecastStateObserver: LivecastPlayerEventListener {
 
     func onTimeUpdate(currentPosition: TimeInterval, bufferPosition: TimeInterval, player: LivecastMediaPlayer) {
         var state = stateProvider.current
+        let itemDuration = state.mediaInfo.currentItem?.duration
+        let duration = player.duration > 0 ? player.duration : itemDuration ?? 0
+
         state.positionInfo.currentPosition = currentPosition
         state.positionInfo.bufferedPosition = bufferPosition
-        state.positionInfo.duration = player.duration
+        state.positionInfo.duration = duration
         stateProvider.setState(state)
     }
 
@@ -33,7 +36,11 @@ extension LivecastStateObserver: LivecastPlayerEventListener {
     private func updateState() {
         var state = stateProvider.current
         state.mediaInfo.currentItem = player.currentItem
-        state.positionInfo.duration = player.duration
+
+        let itemDuration = state.mediaInfo.currentItem?.duration
+        let duration = player.duration > 0 ? player.duration : itemDuration ?? 0
+
+        state.positionInfo.duration = duration
         state.positionInfo.currentPosition = player.currentPosition
         state.positionInfo.bufferedPosition = player.bufferedPosition
         state.playbackState = player.playbackState
